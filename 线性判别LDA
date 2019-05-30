@@ -1,0 +1,27 @@
+d = read.csv("hmeq.csv",na.strings = "")
+View(d)
+dc = d[complete.cases(d),]
+dim(d)
+dim(dc)
+mdist = function(x){
+  t = as.matrix(x)
+  p = dim(t)[2]
+  m = apply(t,2,mean)
+  s = var(t)
+  return(mahalanobis(t,m,s))
+}
+dc1 = dc[dc$BAD==1,]
+dc0 = dc[dc$BAD==0,]
+mdc1 = mdist(dc1[,-c(1,5,6)]) #去掉定性数据
+mdc0 = mdist(dc0[,-c(1,5,6)]) 
+c = qchisq(0.99,10)  #10改为变量数
+x1 = dc1[mdc1<c,]
+x0 = dc0[mdc0<c,]
+x = rbind(x0,x1)
+lg.fit = glm(BAD~.,data=x,family=binomial)
+summary(lg.fit$fitted.values)
+pred1 = predict(lg.fit,type="response")
+pred1-lg.fit$fitted.values #=0
+pred1[pred1>0.5] <- 1
+pred1[pred1<=0.5] <-0
+table(pred1,x$BAD)
