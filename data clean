@@ -1,0 +1,26 @@
+d= read.csv("train.csv",header = TRUE)
+dc = d[complete.cases(d),]
+d0 = d[d$y==0,]      
+d1 = d[d$y==1,]
+d2 = d[d$y==2,]
+d3 = d[d$y==3,]
+label0=sample(c(1:10),dim(d0[1]),replace = TRUE)
+label1=sample(c(1:10),dim(d1[1]),replace = TRUE)
+label2=sample(c(1:10),dim(d2[1]),replace = TRUE)
+label3=sample(c(1:10),dim(d3[1]),replace = TRUE)
+d0_train=d0[label0<=5,]
+d0_test=d0[label0>5,]
+d1_train=d1[label1<=5,]
+d1_test=d1[label1>5,]
+d2_train=d2[label2<=5,]
+d2_test=d2[label2>5,]
+d3_train=d3[label3<=5,]
+d3_test=d3[label3>5,]
+d_train=rbind(d0_train,d1_train,d2_train,d3_train)
+d_test=rbind(d0_test,d1_test,d2_test,d3_test)
+library(nnet)
+re_log=multinom(y~.-id,data=d_train)
+pred_log=predict(re_log,newdata = d_test)
+summary(pred_log)
+tab_log=table(d_test$y,pred_log)
+tab_log
