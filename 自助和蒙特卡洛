@@ -1,0 +1,34 @@
+##蒙特卡罗仿真：用发射随机数的方法模拟数据，根据模拟1000次之后得到的结果预测，由于随机数是正态分布的，要用mvrnorm方法模拟随机数。
+##勾MASS package
+alpha=c()
+for(i in 1:1000)
+{
+mu1=c(0,0)
+sigma1=matrix(c(1,0.5,0.5,1.25),nrow=2)    ###σ²x=1, σ²y=1.25, and σxy=0.5
+rand1=mvrnorm(n=100,mu=mu1,Sigma=sigma1) ##sigma是上面拼成的矩阵
+X= rand1[,1]
+Y= rand1[,2]
+alpha[i]=(var(Y)-cov(X,Y))/(var(X)+var(Y)-2*cov(X,Y))
+}
+mean(alpha)
+var(alpha)
+sqrt(alpha)
+
+##自助抽样法 bootstrap
+Hw: P200.2
+Alpha=c()
+mu1=c(0,0)	
+sigma1=matrix(c(1,0.5,0.5,1.25),nrow=2)
+rand1=mvrnorm(n=100,mu=mu1,Sigma=sigma1)
+X= rand1[,1]
+Y= rand1[,2]
+
+for(j in 1:1000)
+{
+ran=rand1[sample(c(1:100),100,replace=TRUE),] 
+##above指，随机抽rand1中序号是1到100的数组，有放回100次
+X=ran[,1]
+Y=ran[,2]
+alpha[j] =(var(Y)-cov(X,Y))/(var(X)+var(Y)-2*cov(X,Y))
+}
+Mean(alpha)
