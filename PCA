@@ -1,0 +1,10 @@
+d=read.csv("train.csv",header=TRUE)
+View(d)
+dc=d[,2:9]  #鎻愬彇2-9鍒楋紝鍘熸暟鎹?
+sdc=scale(dc)  #绗竴姝ワ細灏嗘暟鎹爣鍑嗗寲  鍧囧€间负0 鏂瑰樊涓?1
+mean(sdc[,1])  #鍙互璁や负鏄?0
+cov_sdc=cov(sdc)  #绗簩姝ワ細鍗忔柟宸煩闃?
+eigen(cov_sdc)  #鐭╅樀鐗瑰緛鍊硷紝鐗瑰緛鍚戦噺锛岀壒寰佸€肩疮鍔犵粨鏋滃ぇ浜?0.85
+princomp(sdc)   #PCA
+library(stats)
+prcomp(sdc)
