@@ -25,3 +25,4 @@ pred1-lg.fit$fitted.values #=0
 pred1[pred1>0.5] <- 1
 pred1[pred1<=0.5] <-0
 table(pred1,x$BAD)
+(table(pred1,x$BAD)[1,1]+table(pred1,x$BAD)[2,2])/sum(table(pred1,x$BAD))#计算正确率
