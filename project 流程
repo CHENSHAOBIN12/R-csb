@@ -1,0 +1,47 @@
+library(randomForest)
+
+d_train$RainTomorrow= as.factor(d_train$RainTomorrow)
+
+err = matrix(rep(0,5*12),nrow = 5,byrow=TRUE)
+for (i in 1:5){
+  for (j in 1:12){
+    model = randomForest(d_train$RainTomorrow~.-X,data=d_train,ntree=100*i,mtry = 5*j)
+    err[i,j] = mean(model$err.rate)
+  }
+}
+a= which(err==err[which.min(err)],arr.ind=T)
+
+rf = randomForest(d_train$RainTomorrow~.-X,data=d_train,ntree=100*a[1],mtry = 5*a[2]) 
+
+
+plot(rf) #这个图可以看每个变量的误判率...61个x这个图一定不好看
+#随机森林的误差，out_of_bag_error
+#看图知道ntrees等于多少时，我们的误差就基本稳定,这样可以缩小ntree就可以跑的更快
+#(我们只用告诉结果就好了，并不用自己再跑一遍，因为不会有什么变化的，只是方便下一个人去做)
+err
+rf 
+
+#给大家看一下结果
+#结果里面处了其他很好理解的
+#还有个混淆矩阵confusion matrix，旁边还有class.error我们对这些类判断误差
+
+
+importance(rf) #看变量们的重要度，Gini
+varlmPlot(rf)  #可以画变量重要性的曲线，知道谁重要，贡献大
+
+node= treesize(rf,terminal = TRUE) #可以看到运行过程每棵树的节点个数
+hist(node)  #统计这些个节点个数发生的频率
+#下面的代码是高级版的，我觉得我的简易版也可以写出来
+#install.packages(plyr)  # 安装plyr包
+#require(plyr)  #载入plyr包
+#require(devtools)
+#install_github('rCharts', 'ramnathv')
+#library(plyr)
+#library(rCharts)
+#count_node <- as.data.frame(plyr::count(node)) 
+#rPlot(x='bin(x,1)',y='freq',data=count_node,type='bar')
+
+
+pred_rf=predict(rf,newdata=d_test)
+table(pred_rf,d_test$RainTomorrow)
+#对角线算精度，懒得写了
